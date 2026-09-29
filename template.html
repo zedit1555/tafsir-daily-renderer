@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+  .scene{width:1080px;height:1920px;background:url('background.png') center/cover;display:flex;align-items:center;justify-content:center;position:relative;font-family:'Amiri',serif}
+  .box{width:820px;max-height:1480px;box-sizing:border-box;padding:50px 44px;border-radius:28px;background:rgba(8,16,34,.58);text-align:center;display:flex;flex-direction:column;align-items:center;gap:26px;overflow:hidden}
+  .verse{direction:rtl;font-family:'Amiri Quran','Amiri',serif;font-size:64px;line-height:1.9;color:#f6eed8;text-shadow:0 0 18px rgba(224,189,106,.35)}
+  .rule{width:140px;height:2px;background:#e0bd6a;opacity:.7;flex:none}
+  .ar{direction:rtl;font-size:40px;line-height:1.75;color:#f6eed8}
+  .en{direction:ltr;font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:34px;line-height:1.45;color:#eadfc2}
+  .wm{position:absolute;bottom:120px;width:100%;text-align:center;color:rgba(224,189,106,.8);font-size:40px}
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="box" id="box">
+    <div class="verse" id="verse">{{VERSE}}</div>
+    <div class="rule"></div>
+    <div class="ar" id="ar">{{TAFSIR_AR}}</div>
+    <div class="en" id="en">{{TAFSIR_EN}}</div>
+  </div>
+  <div class="wm">@tafsir.daily</div>
+</div>
+<script>
+  // Shrink fonts until the whole box fits (for long verses / long tafsir)
+  window.fitText = function () {
+    const box = document.getElementById('box');
+    const els = { verse: [64, 44], ar: [40, 24], en: [34, 20] };
+    let scale = 1;
+    const apply = () => { for (const id in els) document.getElementById(id).style.fontSize = (els[id][0] * scale) + 'px'; };
+    apply();
+    while (box.scrollHeight > box.clientHeight + 1 && scale > 0.5) { scale -= 0.04; apply(); }
+    return scale;
+  };
+</script>
+</body>
+</html>
