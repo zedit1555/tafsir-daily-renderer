@@ -15,6 +15,7 @@ API = "https://admin.mokhtasr.com/api/v1"
 ROOT = pathlib.Path(__file__).parent
 WORK = ROOT / "work"; OUT = ROOT / "out"
 WORK.mkdir(exist_ok=True); OUT.mkdir(exist_ok=True)
+ARABIC_DIGITS = str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩")
 S = requests.Session(); S.headers["User-Agent"] = "tafsir-daily-renderer"
 
 
