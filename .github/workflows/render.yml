@@ -1,0 +1,61 @@
+name: Render tafsir video
+
+on:
+  workflow_dispatch:
+    inputs:
+      surah:
+        description: "Surah number"
+        required: true
+      from_ayah:
+        description: "First ayah"
+        required: true
+      to_ayah:
+        description: "Last ayah"
+        required: true
+      reciter:
+        description: "everyayah.com folder name, e.g. Yasser_Ad-Dussary_128kbps"
+        required: true
+      job_id:
+        description: "Unique id for this video (used as the release tag)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install playwright requests
+          python -m playwright install --with-deps chromium
+
+      - name: Render video
+        env:
+          SURAH: ${{ inputs.surah }}
+          FROM_AYAH: ${{ inputs.from_ayah }}
+          TO_AYAH: ${{ inputs.to_ayah }}
+          RECITER: ${{ inputs.reciter }}
+          MUKHTASAR_EMAIL: ${{ secrets.MUKHTASAR_EMAIL }}
+          MUKHTASAR_PASSWORD: ${{ secrets.MUKHTASAR_PASSWORD }}
+          BOOK_AR: ${{ secrets.BOOK_AR }}
+          BOOK_EN: ${{ secrets.BOOK_EN }}
+        run: python render.py
+
+      - name: Publish video as a release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ inputs.job_id }}" out/video.mp4 \
+            --title "Surah ${{ inputs.surah }} (${{ inputs.from_ayah }}-${{ inputs.to_ayah }})" \
+            --notes "Rendered automatically"
