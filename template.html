@@ -8,6 +8,7 @@
   .scene{width:1080px;height:1920px;background:url('background.png') center/cover;display:flex;align-items:center;justify-content:center;position:relative;font-family:'Amiri',serif}
   .box{width:820px;max-height:1480px;box-sizing:border-box;padding:50px 44px;border-radius:28px;background:rgba(8,16,34,.58);text-align:center;display:flex;flex-direction:column;align-items:center;gap:26px;overflow:hidden}
   .verse{direction:rtl;font-family:'Amiri Quran','Amiri',serif;font-size:64px;line-height:1.9;color:#f6eed8;text-shadow:0 0 18px rgba(224,189,106,.35)}
+  .num{color:#e0bd6a;font-size:.8em;white-space:nowrap}
   .rule{width:140px;height:2px;background:#e0bd6a;opacity:.7;flex:none}
   .ar{direction:rtl;font-size:40px;line-height:1.75;color:#f6eed8}
   .en{direction:ltr;font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:34px;line-height:1.45;color:#eadfc2}
@@ -17,7 +18,7 @@
 <body>
 <div class="scene">
   <div class="box" id="box">
-    <div class="verse" id="verse">{{VERSE}}</div>
+    <div class="verse" id="verse">{{VERSE}} <span class="num">&#xFD3F;{{NUM}}&#xFD3E;</span></div>
     <div class="rule"></div>
     <div class="ar" id="ar">{{TAFSIR_AR}}</div>
     <div class="en" id="en">{{TAFSIR_EN}}</div>
