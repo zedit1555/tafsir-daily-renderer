@@ -85,7 +85,8 @@ def main():
             en = tafsir(token, aya, "en", os.environ["BOOK_EN"])
             page_html = (template.replace("{{VERSE}}", html.escape(v))
                                  .replace("{{TAFSIR_AR}}", html.escape(ar))
-                                 .replace("{{TAFSIR_EN}}", html.escape(en)))
+                                 .replace("{{TAFSIR_EN}}", html.escape(en))
+                                 .replace("{{NUM}}", str(aya).translate(ARABIC_DIGITS)))
             html_file = ROOT / f"_scene.html"   # next to background.png so the relative URL works
             html_file.write_text(page_html, encoding="utf-8")
             page.goto(html_file.as_uri(), wait_until="networkidle")
