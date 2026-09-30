@@ -68,6 +68,7 @@ RECITERS = {  # everyayah folder -> name shown on the cover (add more as you use
     "Yasser_Ad-Dussary_128kbps": "ياسر الدوسري",
     "Minshawy_Mujawwad_192kbps": "محمد صديق المنشاوي",
     "Alafasy_128kbps": "مشاري العفاسي",
+    "Saood_ash-Shuraym_128kbps": "سعود الشريم",
 }
 
 
