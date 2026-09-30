@@ -45,13 +45,15 @@ def verse_text(aya):
     except (KeyError, IndexError):
         fail(f"No Quran text for {SURAH}:{aya}", j)
 
+
 def clean(text):
     """Remove HTML tags like <br>, </br>, <p> that sometimes appear in the tafsir text."""
     text = re.sub(r"<\s*/?\s*br\s*/?\s*>", " ", text, flags=re.I)   # <br>, </br>, <br/>
     text = re.sub(r"<[^>]+>", "", text)                               # any other tag
     text = html.unescape(text)                                        # &nbsp; &quot; ...
     return re.sub(r"\s+", " ", text).strip()
-  
+
+
 def tafsir(token, aya, lang, book):
     r = S.get(f"{API}/book-contents", headers={"Authorization": f"Bearer {token}"},
               params={"lang": lang, "sura": SURAH, "aya": aya, "books": book}, timeout=30)
@@ -60,6 +62,40 @@ def tafsir(token, aya, lang, book):
         return clean(j["data"][0]["books"][0]["text"])
     except (KeyError, IndexError, TypeError):
         fail(f"Tafsir field not found ({lang}, {SURAH}:{aya}). Adjust the path in tafsir().", j)
+
+
+RECITERS = {  # everyayah folder -> name shown on the cover (add more as you use them)
+    "Yasser_Ad-Dussary_128kbps": "ياسر الدوسري",
+    "Minshawy_Mujawwad_192kbps": "محمد صديق المنشاوي",
+    "Alafasy_128kbps": "مشاري العفاسي",
+}
+
+
+def chapter_names():
+    r = S.get(f"https://api.quran.com/api/v4/chapters/{SURAH}", params={"language": "en"}, timeout=30)
+    r.raise_for_status(); c = r.json()["chapter"]
+    return c["name_arabic"], c["name_simple"]
+
+
+def make_cover(page):
+    name_ar, name_en = chapter_names()
+    ar = lambda n: str(n).translate(ARABIC_DIGITS)
+    if A1 == A2:
+        pre, rng = f"SURAH {SURAH} · VERSE {A1}", f"الآية {ar(A1)}"
+    else:
+        pre, rng = f"SURAH {SURAH} · VERSES {A1}–{A2}", f"الآيات {ar(A1)} – {ar(A2)}"
+    rec = RECITERS.get(RECITER)
+    rec_line = f'<div class="rec">بصوت الشيخ {html.escape(rec)}</div>' if rec else ""
+    t = (ROOT / "cover.html").read_text(encoding="utf-8")
+    t = (t.replace("{{PRE}}", pre).replace("{{NAME_AR}}", html.escape(name_ar))
+          .replace("{{NAME_EN}}", html.escape(name_en)).replace("{{RANGE_AR}}", rng)
+          .replace("{{RECITER_LINE}}", rec_line))
+    f = ROOT / "_cover.html"; f.write_text(t, encoding="utf-8")
+    page.goto(f.as_uri(), wait_until="networkidle")
+    page.evaluate("document.fonts.ready")
+    page.evaluate("fitTitle()")
+    page.screenshot(path=str(OUT / "cover.png"))
+    print("Cover:", OUT / "cover.png")
 
 
 def download(url, path):
@@ -83,6 +119,7 @@ def main():
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
         page = browser.new_page(viewport={"width": 1080, "height": 1920})
+        make_cover(page)
         for aya in range(A1, A2 + 1):
             tag = f"{SURAH:03d}{aya:03d}"
             print(f"Verse {SURAH}:{aya}")

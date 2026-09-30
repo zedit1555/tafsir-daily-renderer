@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+  .s{width:1080px;height:1920px;background:url('background.png') center/cover;position:relative;font-family:'Amiri',serif;text-align:center}
+  .box{position:absolute;left:130px;right:130px;top:540px;padding:70px 40px 60px;border-radius:30px;background:rgba(8,16,34,.6)}
+  .pre{color:#e0bd6a;font-size:40px;letter-spacing:.06em;font-family:'EB Garamond',Georgia,serif}
+  .ttl{direction:rtl;font-family:'Aref Ruqaa','Amiri',serif;font-weight:700;color:#f6e3b0;font-size:150px;line-height:1.45;margin-top:10px;white-space:nowrap;text-shadow:0 0 26px rgba(224,189,106,.6)}
+  .ay{direction:rtl;color:#e0bd6a;font-size:50px;margin-top:0}
+  .rule{width:160px;height:2px;background:#e0bd6a;opacity:.8;margin:34px auto}
+  .ar{direction:rtl;color:#f6eed8;font-size:62px;font-weight:700}
+  .en{color:#eadfc2;font-style:italic;font-size:44px;margin-top:14px;font-family:'EB Garamond',Georgia,serif}
+  .rec{direction:rtl;color:#e0bd6a;font-size:44px;margin-top:40px}
+  .wm{position:absolute;bottom:120px;width:100%;color:rgba(224,189,106,.85);font-size:44px}
+</style>
+</head>
+<body>
+<div class="s">
+  <div class="box">
+    <div class="pre">{{PRE}}</div>
+    <div class="ttl" id="ttl">سورة {{NAME_AR}}</div>
+    <div class="ay">{{RANGE_AR}}</div>
+    <div class="rule"></div>
+    <div class="ar">تفسير مختصر مفيد</div>
+    <div class="en">Surah {{NAME_EN}} · Short Tafsir</div>
+    {{RECITER_LINE}}
+  </div>
+  <div class="wm">@tafsir.daily</div>
+</div>
+<script>
+  // Shrink the title if a long surah name doesn't fit in the box
+  window.fitTitle = function () {
+    const t = document.getElementById('ttl'); let size = 150;
+    while (t.scrollWidth > t.parentElement.clientWidth - 20 && size > 70) { size -= 5; t.style.fontSize = size + 'px'; }
+  };
+</script>
+</body>
+</html>
