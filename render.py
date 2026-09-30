@@ -5,7 +5,7 @@ Inputs come from environment variables (set by the GitHub workflow):
   MUKHTASAR_EMAIL, MUKHTASAR_PASSWORD, BOOK_AR, BOOK_EN -> repository secrets
 Output: out/video.mp4
 """
-import html, json, os, subprocess, sys, pathlib
+import html, json, os, re, subprocess, sys, pathlib
 import requests
 from playwright.sync_api import sync_playwright
 
@@ -45,13 +45,19 @@ def verse_text(aya):
     except (KeyError, IndexError):
         fail(f"No Quran text for {SURAH}:{aya}", j)
 
-
+def clean(text):
+    """Remove HTML tags like <br>, </br>, <p> that sometimes appear in the tafsir text."""
+    text = re.sub(r"<\s*/?\s*br\s*/?\s*>", " ", text, flags=re.I)   # <br>, </br>, <br/>
+    text = re.sub(r"<[^>]+>", "", text)                               # any other tag
+    text = html.unescape(text)                                        # &nbsp; &quot; ...
+    return re.sub(r"\s+", " ", text).strip()
+  
 def tafsir(token, aya, lang, book):
     r = S.get(f"{API}/book-contents", headers={"Authorization": f"Bearer {token}"},
               params={"lang": lang, "sura": SURAH, "aya": aya, "books": book}, timeout=30)
     r.raise_for_status(); j = r.json()
     try:
-        return j["data"][0]["books"][0]["text"]
+        return clean(j["data"][0]["books"][0]["text"])
     except (KeyError, IndexError, TypeError):
         fail(f"Tafsir field not found ({lang}, {SURAH}:{aya}). Adjust the path in tafsir().", j)
 
